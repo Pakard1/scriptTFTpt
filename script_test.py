@@ -1,5 +1,6 @@
 import re
 import time
+import pandas as pd
 from selenium import webdriver
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.support.ui import Select
@@ -8,6 +9,9 @@ PATH = "C:\Program Files (x86)\chromedriver.exe"
 driver = webdriver.Chrome(PATH)  # Optional argument, if not specified will search path.
 
 players = ['ArtourBabaevsky', 'Kuzma is High'] #, 'EGN Rodrigues', 'Nyxer TFT', 'FTW AïM'
+
+data = {}
+df = pd.DataFrame(data, columns = ['Position','Player'])
 
 for player in players:
     driver.get('https://lolchess.gg/profile/euw/' + player)
@@ -51,11 +55,19 @@ for player in players:
     avg_rank = re.findall("\d*\.?\d+",player_avg_rank.text)
     print(f"Avg. Rank: #{avg_rank[0]}")
 
-    position = player_rank_region.text.replace("#", "")
+    position_player = player_rank_region.text.replace("#", "")
 
-    print(f"Lugar: {position}")
+    #positions.update({player, position_player}) 
 
+    print(f"{position_player}, {player}")
+
+    
     time.sleep(5) # Let the user actually see something!
 
+#print(positions)
+
+print("-------------------------------------")
+print("\n")
+print(df)
 
 driver.quit() 
