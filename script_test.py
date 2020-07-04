@@ -10,10 +10,10 @@ PATH = "C:\Program Files (x86)\chromedriver.exe"
 driver = webdriver.Chrome(PATH)  # Optional argument, if not specified will search path.
 
 players = ['ArtourBabaevsky', 'EGN Rodrigues', 'Nyxer TFT', 'FTW AïM', 'Kuzma is High', 'Kilnae', 'Jitonce', 'Batata', 'EGN Renygp xD',
-            'Drunkiris', 'levelup_brain']
+            'Drunkiris']
 
 players_positions = {}
-players_positions = pd.DataFrame(columns = ['Position','Player', 'Tier', 'LP', 'Wins', 'Top4', 'Played', 'Win Rate %', 'Top4 Rate %' ])
+players_positions = pd.DataFrame(columns = ['Rank','Player', 'Tier', 'LP', 'Wins', 'Top4', 'Played', 'Win Rate %', 'Top4 Rate %' ])
 
 for player in players:
     driver.get('https://lolchess.gg/profile/euw/' + player)
@@ -59,7 +59,7 @@ for player in players:
 
     position_player = player_rank_region.text.replace("#", "")
 
-    new_row = {'Position': position_player, 'Player': player, 'Tier': player_tier.text, 
+    new_row = {'Rank': position_player, 'Player': player, 'Tier': player_tier.text, 
                 'LP': player_lp.text, 'Wins': wins[0], 'Top4': top4[0], 'Played': played[0],
                 'Win Rate %': winrate[0], 'Top4 Rate %': toprate[1] }
     #players_positions.insert(-1, position_player, player) 
@@ -74,6 +74,10 @@ for player in players:
     time.sleep(5) # Let the user actually see something!
 
 #print(positions)
+
+players_positions.sort_values(by='Rank', ascending=True, inplace=True)
+
+players_positions.to_csv('listarank.csv', index=False)
 
 print("-------------------------------------")
 print("\n")
