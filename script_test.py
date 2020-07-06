@@ -1,20 +1,24 @@
 import re
 import time
+import os
+import os.path
+from pathlib import Path
 import pandas as pd
+import numpy as np
 from selenium import webdriver
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.support.ui import Select
 from tabulate import tabulate
 import matplotlib.pyplot as plt
 import pandas as pd
-from pandas.plotting import table 
+from pandas.plotting import table
+import six
 
 PATH = "C:\Program Files (x86)\chromedriver.exe"
 driver = webdriver.Chrome(PATH)  # Optional argument, if not specified will search path.
 
-players = ['ArtourBabaevsky', 'EGN Rodrigues', 'Nyxer TFT', 'FTW AïM', 'Kuzma is High', 'Kilnae', 'Jitonce', 'Batata', 'EGN Renygp xD',
-            'Drunkiris', 'ZOOLEXisTOP']
-
+players = ['ArtourBabaevsky', 'EGN Rodrigues', 'Kuzma is High'] #'Nyxer TFT', 'FTW AïM', 'Kilnae', 'Jitonce' , 'Batata', 'EGN Renygp xD', 'Drunkiris', 'ZOOLEXisTOP'
+                                                                    
 players_positions = {}
 players_positions = pd.DataFrame(columns = ['Rank','Player', 'Tier', 'LP', 'Wins', 'Top4', 'Played', 'Win Rate %', 'Top4 Rate %' ])
 
@@ -73,7 +77,7 @@ for player in players:
     #print(f"player_positions: {players_positions}")
     #print(f"{position_player}, {player}")
 
-    time.sleep(5) # Let the user actually see something!
+    time.sleep(1) # Let the user actually see something!
 
 #print(positions)
 driver.quit()
@@ -103,5 +107,47 @@ print(table_Data)
 players_positions_sorted = players_positions.to_csv('listarank.csv', index=False)
 data = pd.read_csv('listarank.csv', delimiter=',')
 
+#file_path = "D:\Pythonprojects\tftptscript\listarank.csv"
+
+dirname = os.getcwd()
+filename = 'listarank'
+suffix = '.csv'
+
+file_path = Path(dirname, filename).with_suffix(suffix)
+
+while not os.path.exists(file_path):
+    time.sleep(1)
+
+if os.path.isfile(file_path):
+    data = pd.read_csv('listarank.csv', delimiter=',')
+else:
+    raise ValueError("%s isn't a file!" % file_path)
+
+def render_mpl_table(data, col_width=3.5, row_height=0.625, font_size=14,
+                     header_color='#40466e', row_colors=['#f1f1f2', 'w'], edge_color='w',
+                     bbox=[0, 0, 1, 1], header_columns=0,
+                     ax=None, **kwargs):
+    if ax is None:
+        size = (np.array(data.shape[::-1]) + np.array([0, 1])) * np.array([col_width, row_height])
+        fig, ax = plt.subplots(figsize=size)
+        ax.axis('off')
+
+    mpl_table = ax.table(cellText=data.values, bbox=bbox, colLabels=data.columns, **kwargs)
+
+    mpl_table.auto_set_font_size(False)
+    mpl_table.set_fontsize(font_size)
+
+    for k, cell in six.iteritems(mpl_table._cells):
+        cell.set_edgecolor(edge_color)
+        if k[0] == 0 or k[1] < header_columns:
+            cell.set_text_props(weight='bold', color='w')
+            cell.set_facecolor(header_color)
+        else:
+            cell.set_facecolor(row_colors[k[0]%len(row_colors) ])
+    return ax
+
+render_mpl_table(data, header_columns=0, col_width=3.5)
+plt.savefig('listarank.png')
+plt.savefig('listarank.jpeg')
 
 driver.quit()
