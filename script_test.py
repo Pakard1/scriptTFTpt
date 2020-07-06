@@ -1,7 +1,4 @@
-import re
-import time
-import os
-import os.path
+import re, time, os, os.path, six, email, smtplib, ssl, imghdr
 from pathlib import Path
 import pandas as pd
 import numpy as np
@@ -10,14 +7,15 @@ from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.support.ui import Select
 from tabulate import tabulate
 import matplotlib.pyplot as plt
-import pandas as pd
 from pandas.plotting import table
-import six
+from twilio.rest import Client
+from email.message import EmailMessage
+import datetime as dt
 
 PATH = "C:\Program Files (x86)\chromedriver.exe"
 driver = webdriver.Chrome(PATH)  # Optional argument, if not specified will search path.
 
-players = ['ArtourBabaevsky', 'EGN Rodrigues', 'Kuzma is High'] #'Nyxer TFT', 'FTW AïM', 'Kilnae', 'Jitonce' , 'Batata', 'EGN Renygp xD', 'Drunkiris', 'ZOOLEXisTOP'
+players = ['ArtourBabaevsky', 'EGN Rodrigues', 'Kuzma is High', 'Nyxer TFT', 'FTW AïM', 'Kilnae', 'Jitonce' , 'Batata', 'EGN Renygp xD', 'Drunkiris', 'ZOOLEXisTOP'] #'Nyxer TFT', 'FTW AïM', 'Kilnae', 'Jitonce' , 'Batata', 'EGN Renygp xD', 'Drunkiris', 'ZOOLEXisTOP'
                                                                     
 players_positions = {}
 players_positions = pd.DataFrame(columns = ['Rank','Player', 'Tier', 'LP', 'Wins', 'Top4', 'Played', 'Win Rate %', 'Top4 Rate %' ])
@@ -82,8 +80,6 @@ for player in players:
 #print(positions)
 driver.quit()
 
-players_positions_teste= players_positions.to_csv('teste.csv', index=False)
-
 players_positions['Rank'] = players_positions['Rank'].replace(',','', regex=True)
 players_positions['Rank'].astype(str).astype(int)
 players_positions['Rank'] = pd.to_numeric(players_positions['Rank'])
@@ -107,6 +103,7 @@ print(table_Data)
 players_positions_sorted = players_positions.to_csv('listarank.csv', index=False)
 data = pd.read_csv('listarank.csv', delimiter=',')
 
+
 #file_path = "D:\Pythonprojects\tftptscript\listarank.csv"
 
 dirname = os.getcwd()
@@ -122,6 +119,8 @@ if os.path.isfile(file_path):
     data = pd.read_csv('listarank.csv', delimiter=',')
 else:
     raise ValueError("%s isn't a file!" % file_path)
+
+data["Date"] = pd.Series([dt.datetime.now().date()] * len(data))
 
 def render_mpl_table(data, col_width=3.5, row_height=0.625, font_size=14,
                      header_color='#40466e', row_colors=['#f1f1f2', 'w'], edge_color='w',
@@ -150,4 +149,31 @@ render_mpl_table(data, header_columns=0, col_width=3.5)
 plt.savefig('listarank.png')
 plt.savefig('listarank.jpeg')
 
-driver.quit()
+pw = os.environ.get('gmailpw_py')
+
+port = 465  # For starttls
+smtp_server = 'smtp.gmail.com'
+sender_email = 'tftrankpt.py@gmail.com'
+password = pw 
+
+msg = EmailMessage()
+msg['Subject'] = 'Lista Rank TFT PT'
+msg['From'] = 'tftrankpt.py@gmail.com'
+msg['To'] = 'onun.nuno@gmail.com'
+msg.set_content('Lista Rank TFT PT')
+
+with open('listarank.jpeg', 'rb') as f:
+    file_data = f.read()
+    file_type = imghdr.what(f.name)
+    file_name = f.name
+
+msg.add_attachment(file_data, maintype = 'image', subtype = file_type, filename = file_name)
+
+with smtplib.SMTP_SSL(smtp_server, port) as server:
+    server.login(sender_email, password)
+    server.send_message(msg)
+
+os.remove('D:/Pythonprojects/tftptscript/listarank.csv')
+os.remove('D:/Pythonprojects/tftptscript/listarank.jpeg')
+os.remove('D:/Pythonprojects/tftptscript/listarank.png')
+

@@ -10,10 +10,12 @@ import matplotlib.pyplot as plt
 import pandas as pd
 from pandas.plotting import table
 import six
+import datetime as dt
 
 data = pd.read_csv('listarank.csv', delimiter=',')
+data["Date"] = pd.Series([dt.datetime.now().date()] * len(data))
 
-def render_mpl_table(data, col_width=3.5, row_height=0.625, font_size=14,
+def render_mpl_table(data, col_width=3, row_height=0.625, font_size=14,
                      header_color='#40466e', row_colors=['#f1f1f2', 'w'], edge_color='w',
                      bbox=[0, 0, 1, 1], header_columns=0,
                      ax=None, **kwargs):
@@ -36,7 +38,8 @@ def render_mpl_table(data, col_width=3.5, row_height=0.625, font_size=14,
             cell.set_facecolor(row_colors[k[0]%len(row_colors) ])
     return ax
 
-render_mpl_table(data, header_columns=0, col_width=3.5)
+render_mpl_table(data, header_columns=0, col_width=3)
+
 plt.show()
 plt.savefig('listarank.png')
-plt.savefig('listarank.jpeg')
+plt.savefig('listarank.jpeg') 
