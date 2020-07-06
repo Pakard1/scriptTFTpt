@@ -18,7 +18,7 @@ driver = webdriver.Chrome(PATH)  # Optional argument, if not specified will sear
 players = ['ArtourBabaevsky', 'EGN Rodrigues', 'Kuzma is High', 'Nyxer TFT', 'FTW AïM', 'Kilnae', 'Jitonce' , 'Batata', 'EGN Renygp xD', 'Drunkiris', 'ZOOLEXisTOP'] #'Nyxer TFT', 'FTW AïM', 'Kilnae', 'Jitonce' , 'Batata', 'EGN Renygp xD', 'Drunkiris', 'ZOOLEXisTOP'
                                                                     
 players_positions = {}
-players_positions = pd.DataFrame(columns = ['Rank','Player', 'Tier', 'LP', 'Wins', 'Top4', 'Played', 'Win Rate %', 'Top4 Rate %' ])
+players_positions = pd.DataFrame(columns = ['Rank','Player', 'Tier', 'LP', 'Wins', 'Top4', 'Played', 'Win Rate%', 'Top4 Rate%' ])
 
 for player in players:
     driver.get('https://lolchess.gg/profile/euw/' + player)
@@ -66,7 +66,7 @@ for player in players:
     
     new_row = {'Rank': position_player, 'Player': player, 'Tier': player_tier.text, 
                 'LP': player_lp.text, 'Wins': wins[0], 'Top4': top4[0], 'Played': played[0],
-                'Win Rate %': winrate[0], 'Top4 Rate %': toprate[1] }
+                'Win Rate%': winrate[0], 'Top4 Rate%': toprate[1] }
 
     #players_positions.insert(-1, position_player, player) 
     players_positions = players_positions.append(new_row, ignore_index=True)
@@ -120,7 +120,10 @@ if os.path.isfile(file_path):
 else:
     raise ValueError("%s isn't a file!" % file_path)
 
+now = dt.datetime.now()
+current_time = now.strftime("%H:%M:%S")
 data["Date"] = pd.Series([dt.datetime.now().date()] * len(data))
+data["Time"] = current_time
 
 def render_mpl_table(data, col_width=3.5, row_height=0.625, font_size=14,
                      header_color='#40466e', row_colors=['#f1f1f2', 'w'], edge_color='w',

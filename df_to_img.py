@@ -13,7 +13,12 @@ import six
 import datetime as dt
 
 data = pd.read_csv('listarank.csv', delimiter=',')
-data["Date"] = pd.Series([dt.datetime.now().date()] * len(data))
+
+now = dt.datetime.now()
+current_time = now.strftime("%H:%M:%S")
+data["Date"] = pd.Series([now.date()] * len(data))
+data["Time"] = current_time
+
 
 def render_mpl_table(data, col_width=3, row_height=0.625, font_size=14,
                      header_color='#40466e', row_colors=['#f1f1f2', 'w'], edge_color='w',
