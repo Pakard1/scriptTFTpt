@@ -1,24 +1,19 @@
 import re
 import time
 import pandas as pd
-import imageio
-from imageio import imread
-from PIL import Image
 from selenium import webdriver
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.support.ui import Select
 from tabulate import tabulate
-from numpy import genfromtxt
 import matplotlib.pyplot as plt
 import pandas as pd
 from pandas.plotting import table 
-
 
 PATH = "C:\Program Files (x86)\chromedriver.exe"
 driver = webdriver.Chrome(PATH)  # Optional argument, if not specified will search path.
 
 players = ['ArtourBabaevsky', 'EGN Rodrigues', 'Nyxer TFT', 'FTW AïM', 'Kuzma is High', 'Kilnae', 'Jitonce', 'Batata', 'EGN Renygp xD',
-            'Drunkiris']
+            'Drunkiris', 'ZOOLEXisTOP']
 
 players_positions = {}
 players_positions = pd.DataFrame(columns = ['Rank','Player', 'Tier', 'LP', 'Wins', 'Top4', 'Played', 'Win Rate %', 'Top4 Rate %' ])
@@ -81,6 +76,7 @@ for player in players:
     time.sleep(5) # Let the user actually see something!
 
 #print(positions)
+driver.quit()
 
 players_positions_teste= players_positions.to_csv('teste.csv', index=False)
 
@@ -95,30 +91,17 @@ players_positions.sort_values(by ='Rank' , ascending=True, inplace=True)
 players_positions.set_index('Rank', inplace=True)
 #players_positions.reset_index(drop=True, inplace=True)
 
-players_positions_sorted = players_positions.to_csv('listarank.csv', index=False)
-
-players_positions_np = genfromtxt('listarank.csv', delimiter=',')
-
-ax = players_positions.plot()
-fig = ax.get_figure()
-fig.savefig('ranktftpt.png')
-
-
-ax = plt.subplot(111, frame_on=False) # no visible frame
-ax.xaxis.set_visible(False)  # hide the x axis
-ax.yaxis.set_visible(False)  # hide the y axis
-
-table(ax, players_positions)  # where df is your data frame
-
-plt.savefig('mytable.png')
-
 table_Data = tabulate(players_positions, headers='keys', tablefmt='psql')
 
 #print("-------------------------------------")
-#print("\n")
+print("\n")
 #print(tabulate(players_positions, headers='keys', tablefmt='psql'))
 print(table_Data)
 #print("\n")
 #print(players_positions)
+
+players_positions_sorted = players_positions.to_csv('listarank.csv', index=False)
+data = pd.read_csv('listarank.csv', delimiter=',')
+
 
 driver.quit()
