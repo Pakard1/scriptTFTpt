@@ -18,7 +18,7 @@ from PIL import ImageFont
 PATH = "C:\Program Files (x86)\chromedriver.exe"
 driver = webdriver.Chrome(PATH)  # Optional argument, if not specified will search path.
 
-players = ['ArtourBabaevsky', 'EGN Rodrigues', 'Kuzma is High', 'Nyxer TFT', 'FTW AïM', 'Kilnae', 'Jitonce' , 'Batata', 'EGN Renygp xD', 'Drunkiris', 'ZOOLEXisTOP'] #
+players = ['ArtourBabaevsky','EGN Rodrigues', 'Kuzma is High', 'Nyxer TFT', 'FTW AïM', 'Kilnae', 'Jitonce' , 'Batata', 'EGN Renygp xD', 'Drunkiris', 'ZOOLEXisTOP'] # 
                                                                     
 players_positions = {}
 players_positions = pd.DataFrame(columns = ['Rank','Player', 'Tier', 'LP', 'Wins', 'Top4', 'Played', 'Win Rate%', 'Top4 Rate%' ])
@@ -178,7 +178,7 @@ drawing = ImageDraw.Draw(img)
 font = ImageFont.truetype("Roboto-Regular.ttf", 16)
 text = f"Snapped by Pakard © @ {time} {date}"
 text_w, text_h = drawing.textsize(text, font)
-pos = ((w - text_w) - 250), ((h - text_h) - 50)
+pos = ((w - text_w) - 300), ((h - text_h) - 50)
 c_text = Image.new('RGB', (text_w, (text_h)), color = "#FFFFFF")
 drawing = ImageDraw.Draw(c_text)
 drawing.text((0,0), text, fill='#000000', font = font)
