@@ -95,9 +95,14 @@ players_positions.sort_values(by ='Rank' , ascending=True, inplace=True)
 #players_positions.set_index('Rank', inplace=True)
 #players_positions.reset_index(drop=True, inplace=True)
 
-players_positions.index = players_positions.index + 1
+players_positions.index.name = 'Pos'
+#players_positions.rename(index={0: 'Pos'}, inplace=True)
+#players_positions.rename_axis('Pos', inplace=True)
+#players_positions.index = players_positions.index + 1
 players_positions.reset_index(drop=True, inplace=True)
 players_positions.index = players_positions.index + 1
+players_positions.index.name = 'Pos'
+
 
 table_Data = tabulate(players_positions, headers='keys', tablefmt='psql')
 
@@ -108,7 +113,7 @@ print(table_Data)
 #print("\n")
 #print(players_positions)
 
-players_positions_sorted = players_positions.to_csv('listarank.csv', index=False)
+players_positions_sorted = players_positions.to_csv('listarank.csv', index=True)
 data = pd.read_csv('listarank.csv', delimiter=',')
 
 
