@@ -11,13 +11,17 @@ import pandas as pd
 from pandas.plotting import table
 import six
 import datetime as dt
+from PIL import Image
+from PIL import ImageDraw
+from PIL import ImageFont
 
 data = pd.read_csv('listarank.csv', delimiter=',')
 
 now = dt.datetime.now()
 current_time = now.strftime("%H:%M:%S")
-data["Date"] = pd.Series([now.date()] * len(data))
-data["Time"] = current_time
+current_date = now.strftime("%d/%m/%Y")
+date = current_date
+time = current_time
 
 
 def render_mpl_table(data, col_width=3, row_height=0.625, font_size=14,
@@ -45,6 +49,23 @@ def render_mpl_table(data, col_width=3, row_height=0.625, font_size=14,
 
 render_mpl_table(data, header_columns=0, col_width=3)
 
-plt.show()
+#plt.show()
 plt.savefig('listarank.png')
 plt.savefig('listarank.jpeg') 
+
+img = Image.open('listarank.jpeg')
+
+w, h = img.size
+drawing = ImageDraw.Draw(img)
+font = ImageFont.truetype("Roboto-Regular.ttf", 16)
+text = f"Snapped by Pakard © @ {time} {date}"
+text_w, text_h = drawing.textsize(text, font)
+pos = ((w - text_w) - 250), ((h - text_h) - 5)
+c_text = Image.new('RGB', (text_w, (text_h)), color = "#FFFFFF")
+drawing = ImageDraw.Draw(c_text)
+drawing.text((0,0), text, fill='#000000', font = font)
+
+img.paste(c_text, pos)
+img.save('listarankpt.jpeg')
+img.show('listarankpt.jpeg')
+

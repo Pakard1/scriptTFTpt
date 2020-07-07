@@ -11,11 +11,14 @@ from pandas.plotting import table
 from twilio.rest import Client
 from email.message import EmailMessage
 import datetime as dt
+from PIL import Image
+from PIL import ImageDraw
+from PIL import ImageFont
 
 PATH = "C:\Program Files (x86)\chromedriver.exe"
 driver = webdriver.Chrome(PATH)  # Optional argument, if not specified will search path.
 
-players = ['ArtourBabaevsky', 'EGN Rodrigues', 'Kuzma is High', 'Nyxer TFT', 'FTW AïM', 'Kilnae', 'Jitonce' , 'Batata', 'EGN Renygp xD', 'Drunkiris', 'ZOOLEXisTOP'] #'Nyxer TFT', 'FTW AïM', 'Kilnae', 'Jitonce' , 'Batata', 'EGN Renygp xD', 'Drunkiris', 'ZOOLEXisTOP'
+players = ['ArtourBabaevsky', 'EGN Rodrigues', 'Kuzma is High', 'Nyxer TFT', 'FTW AïM', 'Kilnae', 'Jitonce' , 'Batata', 'EGN Renygp xD', 'Drunkiris', 'ZOOLEXisTOP'] #
                                                                     
 players_positions = {}
 players_positions = pd.DataFrame(columns = ['Rank','Player', 'Tier', 'LP', 'Wins', 'Top4', 'Played', 'Win Rate%', 'Top4 Rate%' ])
@@ -80,6 +83,7 @@ for player in players:
 #print(positions)
 driver.quit()
 
+
 players_positions['Rank'] = players_positions['Rank'].replace(',','', regex=True)
 players_positions['Rank'].astype(str).astype(int)
 players_positions['Rank'] = pd.to_numeric(players_positions['Rank'])
@@ -88,8 +92,12 @@ players_positions['Rank'] = pd.to_numeric(players_positions['Rank'])
 
 players_positions.sort_index(inplace=True)
 players_positions.sort_values(by ='Rank' , ascending=True, inplace=True)
-players_positions.set_index('Rank', inplace=True)
+#players_positions.set_index('Rank', inplace=True)
 #players_positions.reset_index(drop=True, inplace=True)
+
+players_positions.index = players_positions.index + 1
+players_positions.reset_index(drop=True, inplace=True)
+players_positions.index = players_positions.index + 1
 
 table_Data = tabulate(players_positions, headers='keys', tablefmt='psql')
 
@@ -120,12 +128,16 @@ if os.path.isfile(file_path):
 else:
     raise ValueError("%s isn't a file!" % file_path)
 
+data = pd.read_csv('listarank.csv', delimiter=',')
+
 now = dt.datetime.now()
 current_time = now.strftime("%H:%M:%S")
-data["Date"] = pd.Series([dt.datetime.now().date()] * len(data))
-data["Time"] = current_time
+current_date = now.strftime("%d/%m/%Y")
+date = current_date
+time = current_time
 
-def render_mpl_table(data, col_width=3.5, row_height=0.625, font_size=14,
+
+def render_mpl_table(data, col_width=3, row_height=0.625, font_size=14,
                      header_color='#40466e', row_colors=['#f1f1f2', 'w'], edge_color='w',
                      bbox=[0, 0, 1, 1], header_columns=0,
                      ax=None, **kwargs):
@@ -148,9 +160,26 @@ def render_mpl_table(data, col_width=3.5, row_height=0.625, font_size=14,
             cell.set_facecolor(row_colors[k[0]%len(row_colors) ])
     return ax
 
-render_mpl_table(data, header_columns=0, col_width=3.5)
+render_mpl_table(data, header_columns=0, col_width=3)
+
+#plt.show()
 plt.savefig('listarank.png')
-plt.savefig('listarank.jpeg')
+plt.savefig('listarank.jpeg') 
+
+img = Image.open('listarank.jpeg')
+
+w, h = img.size
+drawing = ImageDraw.Draw(img)
+font = ImageFont.truetype("Roboto-Regular.ttf", 16)
+text = f"Snapped by Pakard © @ {time} {date}"
+text_w, text_h = drawing.textsize(text, font)
+pos = ((w - text_w) - 250), ((h - text_h) - 50)
+c_text = Image.new('RGB', (text_w, (text_h)), color = "#FFFFFF")
+drawing = ImageDraw.Draw(c_text)
+drawing.text((0,0), text, fill='#000000', font = font)
+
+img.paste(c_text, pos)
+img.save('listarankpt.jpeg')
 
 pw = os.environ.get('gmailpw_py')
 
@@ -165,7 +194,7 @@ msg['From'] = 'tftrankpt.py@gmail.com'
 msg['To'] = 'onun.nuno@gmail.com'
 msg.set_content('Lista Rank TFT PT')
 
-with open('listarank.jpeg', 'rb') as f:
+with open('listarankpt.jpeg', 'rb') as f:
     file_data = f.read()
     file_type = imghdr.what(f.name)
     file_name = f.name
@@ -177,6 +206,6 @@ with smtplib.SMTP_SSL(smtp_server, port) as server:
     server.send_message(msg)
 
 os.remove('D:/Pythonprojects/tftptscript/listarank.csv')
-os.remove('D:/Pythonprojects/tftptscript/listarank.jpeg')
+os.remove('D:/Pythonprojects/tftptscript/listarankpt.jpeg')
 os.remove('D:/Pythonprojects/tftptscript/listarank.png')
 
