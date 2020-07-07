@@ -176,7 +176,7 @@ img = Image.open('listarank.jpeg')
 w, h = img.size
 drawing = ImageDraw.Draw(img)
 font = ImageFont.truetype("Roboto-Regular.ttf", 16)
-text = f"Snapped by Pakard © @ {time} {date}"
+text = f"Snapshot by Pakard © @ {time} {date}"
 text_w, text_h = drawing.textsize(text, font)
 pos = ((w - text_w) - 300), ((h - text_h) - 50)
 c_text = Image.new('RGB', (text_w, (text_h)), color = "#FFFFFF")
