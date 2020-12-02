@@ -1,1 +1,6 @@
+NÃO ME JULGUEM
+
 # scriptTFTpt
+
+
+
